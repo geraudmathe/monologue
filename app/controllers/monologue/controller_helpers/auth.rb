@@ -12,9 +12,15 @@ module Monologue
 
       private
       def authenticate_user!
-         if monologue_current_user.nil?
-           redirect_to monologue.admin_login_url, alert: I18n.t("monologue.admin.login.need_auth")
-         end
+        if monologue_current_user.nil?
+          login_url = if Monologue::Config.devise
+            main_app.new_user_session_path
+          else
+            monologue.admin_login_url
+          end
+
+          redirect_to login_url, alert: I18n.t("monologue.admin.login.need_auth")
+        end
       end
     end
   end

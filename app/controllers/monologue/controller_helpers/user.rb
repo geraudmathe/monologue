@@ -11,7 +11,16 @@ module Monologue
 
       private
       def monologue_current_user
-        @monologue_current_user ||= Monologue::User.find(session[:monologue_user_id]) if session[:monologue_user_id]
+        @monologue_current_user ||= if Monologue::Config.devise
+          current_user.class.send(:define_method, "can_delete?") do |user|
+            return false if self==user
+            return false if user.posts.any?
+            true
+          end
+          current_user
+        else
+          Monologue::User.find(session[:monologue_user_id]) if session[:monologue_user_id]
+        end
       end
     end
   end

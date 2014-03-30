@@ -1,7 +1,7 @@
 class Monologue::Admin::UsersController < Monologue::Admin::BaseController
 
   before_filter :load_user, except: [:index, :new, :create]
-
+  before_filter :devise_managed_resource?
   def edit
 
   end
@@ -44,6 +44,10 @@ class Monologue::Admin::UsersController < Monologue::Admin::BaseController
   private
     def load_user
       @user = Monologue::User.find(params[:id])
+    end
+
+    def devise_managed_resource?
+      redirect_to root_path if Monologue::Config.devise
     end
 
     def user_params
